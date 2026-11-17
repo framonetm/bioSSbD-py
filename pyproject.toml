@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "biossbd"
-version = "0.1.0"
+version = "0.2.0"
 description = "Open-source toolbox for Safe-and-Sustainable-by-Design (SSbD) assessment of process-based and bio-based systems"
 readme = "README.md"
 license = "MIT"

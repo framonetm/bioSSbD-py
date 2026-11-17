@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 – openLCA climate-change example (2026-11-17)
+- Worked example: real climate-change LCA with openLCA 2 and USLCI (`examples/acod/lca_openlca.py`,
+  results in `examples/acod/acod_lca_results.yaml`): IPCC AR6 GWP100 mapped to FEDEFL flows, truck delivery,
+  fugitive methane and country grid credit (Ember via OWID)
+- Worked example: steam-explosion pretreatment for coffee husk, so the Inherent Safety Index separates the
+  alternatives (18, 18, 20); regression test added
 - `biossbd.lca_inventory`: inventory per alternative (materials, transport in t*km, energy) from background
   processes; totals are linear sums of amount × unit impact, with provenance per line (unsourced = ASSUMPTION)
 - openLCA connector: `unit_impacts` (process target, falls back to a product system), `reference` (reference

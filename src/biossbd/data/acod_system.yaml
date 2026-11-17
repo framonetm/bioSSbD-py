@@ -225,6 +225,17 @@ alternatives:
         stage: feedstock handling
         process_hazards: [bioaerosols, mycotoxins]
         inventory_kg: 0
+      # Lignocellulosic coffee husk is pretreated before digestion. ASSUMPTION for the worked
+      # example: batch steam explosion at about 190 C and 13 bar (abs) with rapid decompression,
+      # a pressure vessel rated as a high-hazard reactor in Heikkila's equipment table (score 3).
+      - name: Steam-explosion pretreatment
+        stage: processing
+        process_hazards: [overpressure]
+        inventory_kg: 0
+        temperature_c: 190
+        pressure_bar: 13
+        equipment_score: 3
+        structure_score: 1
     risks: *risks
     indicators:
       Feedstock reliability: {value: 2, evidence: literature, source: Table 6}

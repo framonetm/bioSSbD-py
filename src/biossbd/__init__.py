@@ -7,7 +7,7 @@ Main entry points::
     from biossbd.safety import safety_kpis
     from biossbd.dossier import write_dossier
 """
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from .dataquality import DataPoint  # noqa: E402
 from .evaluation import Evaluation  # noqa: E402

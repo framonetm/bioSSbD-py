@@ -58,3 +58,12 @@ def test_safety_kpis(acod):
     assert "Biogas holder" in k.high_risk_units
     assert k.hazardous_inventory_kg >= 600
     assert k.top_risks[0]["risk"] == "Start-up instability"
+
+
+def test_isi_discriminates_pretreatment(acod):
+    """Steam-explosion pretreatment (coffee husk only) raises the pressure and equipment sub-indices."""
+    isi = {a.name: safety_kpis(acod, a.name).isi for a in acod.alternatives}
+    coffee = isi["Coffee husk + manure"]
+    assert coffee.process["pressure"] == 1 and coffee.process["equipment"] == 3
+    assert coffee.total == isi[L].total + 2
+    assert isi[L].total == isi["Cacao husk + manure"].total

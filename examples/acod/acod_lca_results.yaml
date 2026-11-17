@@ -1,0 +1,59 @@
+# Climate-change results of the AcoD worked example, calculated on 2026-11-17 with
+# openLCA 2 (IPC server) and USLCI v1.2026-09.0. Reproduce with lca_openlca.py.
+#
+# Functional unit: one year of plant operation; per-MWh values divide by the net electricity.
+# Method: IPCC AR6 GWP100 for CO2, CH4 (fossil 29.8, biogenic 27.0) and N2O (273), mapped to the
+#   FEDEFL elementary flows of USLCI (the generic openLCA LCIA pack has no FEDEFL factors).
+# Foreground (per alternative): co-substrate delivery by truck (USLCI "Transport, single unit
+#   truck; short-haul; diesel powered", 0.434 kg CO2-eq per t*km) and fugitive methane
+#   (2 % of methane produced; ASSUMPTION). Manure is produced on site (no transport).
+# Credit: grid electricity displaced, lifecycle carbon intensity 2025 (Ember 2026 via Our World in
+#   Data). Not included: avoided methane from untreated manure storage, digestate as fertiliser,
+#   plant construction. These are the same or similar for the three alternatives.
+unit: kg CO2-eq per year
+sources:
+  background: "USLCI v1.2026-09.0, Federal LCA Commons (github.com/FLCAC-admin/uslci-content)"
+  grid: "Ember (2026) with processing by Our World in Data, lifecycle carbon intensity of electricity, 2025"
+  gwp: "IPCC AR6 WG1 (2021), Table 7.15, GWP100"
+assumptions:
+  fugitive_methane_share: 0.02
+  methane_density_kg_m3: 0.717
+  truck_distance_km: {Lactoserum + manure: 30, Cacao husk + manure: 50, Coffee husk + manure: 50}
+alternatives:
+  Lactoserum + manure:
+    country: Colombia
+    electricity_mwh: 283.9
+    truck_tkm: 45000
+    plant: 51143
+    transport: 19549
+    fugitive_methane: 31594
+    grid_intensity_g_per_kwh: 186.81
+    avoided_grid: 53033
+    net: -1890
+    net_per_mwh: -6.7
+  Cacao husk + manure:
+    country: Brazil
+    electricity_mwh: 289.6
+    truck_tkm: 7500
+    plant: 35491
+    transport: 3258
+    fugitive_methane: 32233
+    grid_intensity_g_per_kwh: 109.95
+    avoided_grid: 31845
+    net: 3646
+    net_per_mwh: 12.6
+  Coffee husk + manure:
+    country: Mexico
+    electricity_mwh: 243.2
+    truck_tkm: 7500
+    plant: 30322
+    transport: 3258
+    fugitive_methane: 27064
+    grid_intensity_g_per_kwh: 474.02
+    avoided_grid: 115274
+    net: -84952
+    net_per_mwh: -349.3
+sensitivity_net_per_mwh:   # fugitive methane share 1 % and 4 %
+  Lactoserum + manure: {leak_1pct: -62.3, leak_4pct: 104.6}
+  Cacao husk + manure: {leak_1pct: -43.1, leak_4pct: 123.9}
+  Coffee husk + manure: {leak_1pct: -405.0, leak_4pct: -238.0}
