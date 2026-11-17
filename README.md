@@ -62,6 +62,13 @@ Every value keeps its source and evidence type; download the whole system as YAM
 2. Open the database, then **Tools → Developer tools → IPC Server → Start** (port 8080).
 3. `pip install "biossbd[openlca]"`, then in step 5 choose openLCA and press **Connect**.
 
+The LCIA methods must use the same elementary-flow list as the database (e.g. FEDEFL for USLCI); otherwise
+openLCA returns 0 for every impact without an error. bioSSbD-py raises `MethodMismatchError` in that case, and
+`OpenLCA.method_coverage()` shows how many inventory flows a method characterises. Full guide and checks:
+[docs/openlca_setup.md](docs/openlca_setup.md). The openLCA connector is **experimental**: listing, process
+search and direct process calculation are verified against openLCA 2 with USLCI; impact totals still await a
+matching LCIA method set.
+
 ### Connecting Brightway
 
 Create a Brightway 2.5 project and import a database (e.g. ecoinvent with your licence via `ecoinvent_interface`,

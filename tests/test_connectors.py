@@ -154,6 +154,64 @@ def test_openlca_unit_impacts_and_reference():
     assert cl.target == "ProductSystem"  # fell back to a product system created from the process
 
 
+def test_openlca_zero_impacts_with_emissions_is_method_mismatch():
+    # Live openLCA 2 + USLCI with generic LCIA methods returned 0 for every category although the
+    # inventory held 0.32 kg fossil CO2 per t*km: the factors are keyed to other flow UUIDs.
+    class ZeroResult(FakeResult):
+        def get_total_impacts(self):
+            return [SimpleNamespace(impact_category=SimpleNamespace(name="GWP 100", ref_unit="kg CO2 eq"),
+                                    amount=0.0)]
+        def get_total_flows(self):
+            return [SimpleNamespace(amount=0.32), SimpleNamespace(amount=0.0)]
+
+    class Mismatch(FakeClient):
+        calls = 0
+        def calculate(self, setup):
+            Mismatch.calls += 1
+            return ZeroResult()
+    ol = openlca.OpenLCA(client=Mismatch(), schema=FakeSchema)
+    with pytest.raises(openlca.MethodMismatchError, match="do not match"):
+        ol.calculate("ps", "m")
+    Mismatch.calls = 0
+    with pytest.raises(openlca.MethodMismatchError):
+        ol.unit_impacts("p1", "m1")
+    assert Mismatch.calls == 1  # no product system created as a pointless fallback
+
+    class TrulyZero(ZeroResult):  # no emissions at all: zeros are a legitimate result
+        def get_total_flows(self):
+            return [SimpleNamespace(amount=0.0)]
+    class Clean(FakeClient):
+        def calculate(self, setup):
+            return TrulyZero()
+    assert openlca.OpenLCA(client=Clean(), schema=FakeSchema).calculate("ps", "m")[0].amount == 0.0
+
+
+def test_openlca_method_coverage():
+    def flow(fid, name, amount):
+        return SimpleNamespace(amount=amount, envi_flow=SimpleNamespace(
+            flow=SimpleNamespace(id=fid, name=name, category="emission/air")))
+
+    class Res(FakeResult):
+        def get_total_flows(self):
+            return [flow("co2-fedefl", "Carbon dioxide", 0.32), flow("ch4", "Methane", 1e-4),
+                    flow("n2o", "Dinitrogen monoxide", 0.0)]
+
+    class Cov(FakeClient):
+        def get(self, cls, uid):
+            if uid == "m1":
+                return SimpleNamespace(impact_categories=[SimpleNamespace(id="gwp")])
+            return SimpleNamespace(impact_factors=[SimpleNamespace(flow=SimpleNamespace(id="ch4")),
+                                                   SimpleNamespace(flow=SimpleNamespace(id="co2-ilcd"))])
+        def calculate(self, setup):
+            assert setup.target.ref_type == "Process"
+            return Res()
+
+    schema = type("S", (FakeSchema,), {"ImpactCategory": type("ImpactCategory", (), {})})
+    cov = openlca.OpenLCA(client=Cov(), schema=schema).method_coverage("p1", "m1")
+    assert cov["flows"] == 2 and cov["matched"] == 1  # zero flows ignored; CO2 has another UUID
+    assert cov["largest_unmatched"] == [("Carbon dioxide", "emission/air", 0.32)]
+
+
 def test_openlca_unreachable_raises():
     class Down(FakeClient):
         def get_descriptors(self, cls):

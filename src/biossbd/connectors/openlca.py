@@ -14,6 +14,15 @@ from ..dataquality import DataPoint
 from .http import ConnectorError
 
 
+class MethodMismatchError(ConnectorError):
+    """All impacts are zero although the inventory has emissions.
+
+    Typical cause: the LCIA methods were imported for a different elementary-flow list
+    than the database (e.g. generic openLCA LCIA methods in a USLCI/FEDEFL database), so
+    no characterisation factor matches a flow by UUID and every score is silently 0.
+    """
+
+
 @dataclass
 class Item:
     id: str
@@ -122,6 +131,15 @@ class OpenLCA:
                 cat = iv.impact_category
                 out.append(ImpactResult(category=cat.name or "", unit=getattr(cat, "ref_unit", "") or "",
                                         amount=float(iv.amount or 0.0)))
+            if out and all(r.amount == 0.0 for r in out):
+                n = _nonzero_flows(result)
+                if n:
+                    raise MethodMismatchError(
+                        f"All {len(out)} impact results are 0 although the inventory has {n} non-zero "
+                        "elementary flows: the LCIA method's characterisation factors do not match the "
+                        "database's elementary flows. Import the LCIA method package made for this "
+                        "database (same flow list), e.g. from openLCA Nexus or the Federal LCA Commons "
+                        "for USLCI; see docs/openlca_setup.md.")
             return out
         finally:
             if hasattr(result, "dispose"):
@@ -136,9 +154,54 @@ class OpenLCA:
         """
         try:
             return self.calculate(process_id, method_id, amount=1.0, target_type="Process")
+        except MethodMismatchError:
+            raise  # a product system would give the same zeros
         except ConnectorError:
             ps = self.create_product_system(process_id)
             return self.calculate(ps.id, method_id, amount=1.0)
+
+    def method_coverage(self, process_id: str, method_id: str, top: int = 5) -> dict:
+        """How many non-zero inventory flows of 1 unit of a process have a factor in the method.
+
+        Factors are matched by flow UUID, as openLCA does. Returns ``matched``, ``flows`` and
+        ``largest_unmatched``: the ``top`` largest flows (by |amount|) without any factor, as
+        (name, compartment, amount). A low ``matched`` with CO2 or methane among the unmatched
+        means the method and the database use different elementary-flow lists.
+        """
+        o = self.o
+        try:
+            m = self.client.get(o.ImpactMethod, method_id)
+            ids = set()
+            for ic in (getattr(m, "impact_categories", None) or []):
+                cat = self.client.get(o.ImpactCategory, ic.id)
+                ids |= {cf.flow.id for cf in (getattr(cat, "impact_factors", None) or [])}
+            setup = o.CalculationSetup(target=o.Ref(ref_type=o.RefType.Process, id=process_id),
+                                       impact_method=o.Ref(ref_type=o.RefType.ImpactMethod, id=method_id),
+                                       amount=1.0)
+            result = self.client.calculate(setup)
+        except Exception as e:
+            raise ConnectorError(f"openLCA coverage check failed: {e}") from e
+        try:
+            if hasattr(result, "wait_until_ready"):
+                result.wait_until_ready()
+            flows = [v for v in (result.get_total_flows() or []) if float(v.amount or 0.0) != 0.0]
+        finally:
+            if hasattr(result, "dispose"):
+                result.dispose()
+        unmatched = sorted((v for v in flows if v.envi_flow.flow.id not in ids),
+                           key=lambda v: -abs(float(v.amount)))
+        return {"matched": len(flows) - len(unmatched), "flows": len(flows),
+                "largest_unmatched": [(v.envi_flow.flow.name or "", getattr(v.envi_flow.flow, "category", "") or "",
+                                       float(v.amount)) for v in unmatched[:top]]}
+
+
+def _nonzero_flows(result) -> int:
+    """Number of non-zero elementary flows in a result (0 if the result cannot report them)."""
+    try:
+        flows = result.get_total_flows() or []
+    except Exception:
+        return 0
+    return sum(1 for v in flows if float(getattr(v, "amount", 0.0) or 0.0) != 0.0)
 
 
 def to_indicators(results: list[ImpactResult], source: str, prefix: str = "") -> dict[str, DataPoint]:

@@ -12,9 +12,20 @@ bioSSbD-py talks to the openLCA 2 desktop application through its IPC server
 ## 2. Download free data from openLCA Nexus
 1. Create a free account at <https://nexus.openlca.org>.
 2. Under *Databases*, filter for free ones and download:
-   - **USLCI** (US Life Cycle Inventory): materials, transport (lorry, rail, ship in t·km) and electricity.
+   - **USLCI** (US Life Cycle Inventory): materials, transport (truck, rail, barge in t·km) and electricity.
      A good first database.
-   - **openLCA LCIA methods** (free pack with EF 3.x, ReCiPe, TRACI, ...). Needed for GHG and other impacts.
+   - **LCIA methods that use the same elementary-flow list as the database.** Needed for GHG and other
+     impacts. The methods match flows by UUID, not by name, so a mismatched pack gives **0 for every
+     impact** with no error from openLCA.
+
+> **Verified on 2026-11-17 (openLCA 2, USLCI):** the generic *openLCA LCIA methods* pack (EF 3.x, IPCC 2021,
+> TRACI 2.1, CML-IA, ReCiPe, ...) uses openLCA/ILCD flow UUIDs, while USLCI uses the Federal LCA Commons
+> Elementary Flow List (FEDEFL). Of 3813 non-zero flows in a truck-transport inventory, the best pack method
+> (EF 3.1) characterised 28 and IPCC 2021 none, so the GWP of 1 t·km came out as 0 instead of the fossil CO2
+> (0.32 kg) in the inventory. For USLCI, use LCIA methods published for FEDEFL flows (Federal LCA Commons), or
+> a database that ships with matching methods. bioSSbD-py now raises `MethodMismatchError` when all impacts are
+> 0 but the inventory has emissions; a *partial* match (some factors found) cannot be detected that way, so
+> run the check in section 5 when you change database or method.
 3. Optional: **Agribalyse** for agricultural and food inputs.
 
 ## 3. Load the data into openLCA
@@ -43,6 +54,18 @@ Test-NetConnection localhost -Port 8080 -InformationLevel Quiet   # True = serve
 ```
 
 If it prints `False`, repeat step 4.
+
+Then check that the LCIA method fits the database: calculate 1 unit of a process you know emits CO2 and
+see which of its flows the method characterises (replace the two names as needed):
+
+```powershell
+.\.venv\Scripts\python.exe -c "from biossbd.connectors.openlca import OpenLCA; o = OpenLCA(8080); p = o.processes('Transport, combination truck; average fuel mix')[0]; m = [x for x in o.impact_methods() if x.name == 'IPCC 2021'][0]; print(o.method_coverage(p.id, m.id))"
+```
+
+`matched` near 0 (USLCI with the generic pack gave `'matched': 0, 'flows': 3813` for IPCC 2021) means the
+method and the database use different elementary-flow lists (see the note in section 2): pick or import a
+matching method before using results. `largest_unmatched` shows the biggest flows the method ignores; USLCI
+also reports some cut-off technosphere flows there, which no method characterises.
 
 ## 6. Use it in the GUI
 1. `.\.venv\Scripts\python.exe -m biossbd.cli gui` and open <http://localhost:8501>.
