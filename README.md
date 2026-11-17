@@ -1,5 +1,7 @@
 # bioSSbD-py
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24310415.svg)](https://doi.org/10.5281/zenodo.24310415)
+
 **An open-source toolbox for Safe-and-Sustainable-by-Design (SSbD) assessment of process-based and bio-based systems.**
 
 bioSSbD-py turns the [revised EC SSbD framework](https://publications.jrc.ec.europa.eu/repository/handle/JRC143022) (JRC, 2025) and the

@@ -11,6 +11,7 @@ authors:
     given-names: Fernando
     affiliation: "Institute for Physical and Information Technologies (ITEFI), CSIC"
     orcid: "https://orcid.org/0000-0002-7517-0894"
+doi: 10.5281/zenodo.24310415
 repository-code: "https://github.com/framonetm/bioSSbD-py"
 keywords: [SSbD, biorefinery, life cycle assessment, process safety, MCDA]
 references:
