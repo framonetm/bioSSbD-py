@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv*/
+.ipynb_checkpoints/
+.pytest_cache/
+.coverage
+htmlcov/
+*_dossier.md
+
+# Local, not for publication
+*_manuscript_draft.docx
+test_report.txt

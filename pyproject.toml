@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biossbd"
+version = "0.1.0"
+description = "Open-source toolbox for Safe-and-Sustainable-by-Design (SSbD) assessment of process-based and bio-based systems"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Fernando Ramonet" }]
+requires-python = ">=3.10"
+keywords = ["safe and sustainable by design", "SSbD", "biorefinery", "life cycle assessment",
+            "process safety", "inherent safety", "MCDA", "anaerobic digestion"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Chemistry",
+]
+dependencies = ["numpy>=1.24", "pandas>=2.0", "pydantic>=2.5", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+qsdsan = ["qsdsan>=1.4", "biosteam>=2.40"]
+brightway = ["brightway25>=1.0"]
+notebooks = ["jupyterlab", "matplotlib"]
+gui = ["streamlit>=1.50", "matplotlib"]
+openlca = ["olca-ipc>=2.4"]
+all = ["biossbd[gui,qsdsan,brightway,openlca,notebooks]"]
+dev = ["pytest>=7", "pytest-cov", "matplotlib"]
+
+[project.scripts]
+biossbd = "biossbd.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/framonetm/bioSSbD-py#readme"
+Source = "https://github.com/framonetm/bioSSbD-py"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+biossbd = ["data/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]

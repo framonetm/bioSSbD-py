@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use bioSSbD-py, please cite it as below."
+title: "bioSSbD-py: an open-source toolbox for Safe-and-Sustainable-by-Design assessment of process-based and bio-based systems"
+version: 0.1.0
+date-released: 2026-11-13
+license: MIT
+authors:
+  - family-names: Ramonet
+    given-names: Fernando
+    affiliation: "Institute for Physical and Information Technologies (ITEFI), CSIC"
+repository-code: "https://github.com/framonetm/bioSSbD-py"
+keywords: [SSbD, biorefinery, life cycle assessment, process safety, MCDA]
+references:
+  - type: article
+    title: "Operationalizing BioSSbD: A safe-and-sustainable-by-design framework for biorefineries"
+    authors: [{family-names: Ramonet, given-names: Fernando}]
+    journal: "Biofuels, Bioproducts and Biorefining"
+    year: 2026
+    doi: 10.1002/bbb.70178

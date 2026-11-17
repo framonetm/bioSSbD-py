@@ -1,0 +1,43 @@
+# Screening techno-economic presets for the AcoD worked example.
+# Cost and price parameters come from published sources (see `sources`).
+# Plant size (tonnes per year) is an ASSUMPTION for a farm with ~150 cattle;
+# replace it with your own design data.
+common:
+  electrical_efficiency: 0.35        # typical gas-engine CHP (assumption)
+  thermal_efficiency: 0.0            # heat not valued by default
+  operating_hours: 7500              # assumption
+  specific_capex_per_kwe: 6100       # upper end of IRENA range for AD power systems, USD 2570-6100/kW (small scale)
+  fixed_om_share: 0.05               # IRENA: fixed O&M 2-7 % of installed cost per year
+  variable_om_per_kwh: 0.005         # IRENA: ~USD 0.005/kWh
+  lifetime: 20
+  discount_rate: 0.10                # assumption for Latin America (IRENA cost of capital 3.8 % Europe - 12 % Africa)
+  currency: USD
+  sources:
+    capex: "IRENA (2012) Renewable Energy Technologies: Cost Analysis Series – Biomass for Power Generation"
+    om: "IRENA (2012) Biomass for Power Generation: fixed O&M 2-7 % of installed cost; variable ~USD 0.005/kWh"
+    manure_yield: "Cantabria batch trials: dairy manure 18.0 L CH4/kg (core.ac.uk/download/147470583.pdf)"
+alternatives:
+  Lactoserum + manure:
+    electricity_price: 0.232         # Colombia, business tariff (GlobalPetrolPrices)
+    feedstocks:
+      - {name: cattle manure, tonnes_per_year: 3000, methane_yield_m3_per_t: 18.0}
+      - {name: cheese whey, tonnes_per_year: 1500, methane_yield_m3_per_t: 18.4}
+    sources:
+      price: "GlobalPetrolPrices, Colombia business electricity USD 0.232/kWh"
+      co_substrate_yield: "Cheese whey 17.5-19.3 L CH4/kg (core.ac.uk/download/147470583.pdf); midpoint used"
+  Cacao husk + manure:
+    electricity_price: 0.146         # Brazil, business tariff, March 2026 (GlobalPetrolPrices)
+    feedstocks:
+      - {name: cattle manure, tonnes_per_year: 3000, methane_yield_m3_per_t: 18.0}
+      - {name: cocoa shell, tonnes_per_year: 150, methane_yield_m3_per_t: 195}
+    sources:
+      price: "GlobalPetrolPrices, Brazil business electricity USD 0.146/kWh (01.03.2026)"
+      co_substrate_yield: "Cocoa shell 195 L CH4/kg; 10 % shell hindered hydrolysis, so 5 % of manure mass used (core.ac.uk/download/147470583.pdf)"
+  Coffee husk + manure:
+    electricity_price: 0.233         # Mexico, business tariff, Dec 2025 (GlobalPetrolPrices); CFE medium-power ~0.119
+    feedstocks:
+      - {name: cattle manure, tonnes_per_year: 3000, methane_yield_m3_per_t: 18.0}
+      - {name: coffee husk, tonnes_per_year: 150, methane_yield_m3_per_t: 106}
+    sources:
+      price: "GlobalPetrolPrices, Mexico business electricity USD 0.233/kWh (01.12.2025); CFE medium-power rate USD 0.119/kWh (Tetakawi) as low case"
+      co_substrate_yield: "Coffee husk 132.5 L CH4/kg VS in continuous digestion (Chala et al.); x 0.80 kg VS/kg as received (ASSUMPTION)"

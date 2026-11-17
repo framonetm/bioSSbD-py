@@ -1,0 +1,250 @@
+# Worked example: manure-centred anaerobic co-digestion (AcoD) with three
+# Latin American co-substrates.
+#
+# Indicator scores (ordinal 1-5) reproduce the screening study
+#   Ramonet, F., Cabeza, C., Vance, C., Cabeza, I. "Safe-and-Sustainable-by-Design
+#   screening of anaerobic co-digestion of dairy, cocoa and coffee residues with
+#   manure" (under review), Tables 6-12 and Supplementary Material S2.
+#
+# Unit inventories, temperatures and pressures are ILLUSTRATIVE placeholders for
+# a farm-scale CSTR plant, chosen to demonstrate the toolbox. Replace them with
+# design data (or QSDsan/ADM1 mass balances) before drawing conclusions.
+
+name: Manure-centred anaerobic co-digestion (AcoD)
+functional_unit: 1 MJ of biogas (LHV) produced
+system_boundary: cradle-to-grave (feedstock supply to digestate land application)
+
+innovation:
+  description: >
+    Valorisation of agro-industrial residues (cheese whey, cacao husk, coffee husk)
+    by anaerobic co-digestion with cattle manure, producing biogas for combined
+    heat and power and digestate as fertiliser.
+  objectives:
+    - Stable methane production with manure as buffering base substrate
+    - Avoid acidification and start-up failures
+    - Reduce occupational exposure during residue handling
+  principles: [substitution, minimisation, moderation, simplification]
+  design_actions:
+    - Manure-buffered co-substrate ratio (C/N 20-30)
+    - Controlled start-up and organic loading rate
+    - Low-pressure tubular or CSTR digesters with passive gas safety
+  trl: 6
+
+stages:
+  - name: raw material
+    description: Farming of coffee, cocoa and dairy cattle
+    receptors: [workers, environment]
+  - name: feedstock handling
+    description: Collection, transport, storage and pretreatment of manure and residues
+    receptors: [workers]
+  - name: processing
+    description: Mesophilic anaerobic co-digestion
+  - name: storage
+    description: Biogas holder
+  - name: use
+    description: Combined heat and power (CHP) engine
+  - name: end of life
+    description: Digestate storage and land application
+    receptors: [soil, water]
+
+actors:
+  - {name: Farmers and cooperatives, role: feedstock suppliers, stages: [raw material]}
+  - {name: Agro-industrial processors, role: residue suppliers, stages: [raw material, feedstock handling]}
+  - {name: Plant operator, role: owner and operator, stages: [feedstock handling, processing, storage, use]}
+  - {name: Digestate users, role: farmers applying digestate, stages: [end of life]}
+  - {name: Environmental and labour authorities, role: regulators, stages: [processing, end of life]}
+
+substances:
+  - {name: methane, role: product}
+  - {name: carbon dioxide, role: product}
+  - {name: hydrogen sulfide, role: emission}
+  - {name: ammonia, role: emission}
+  - {name: carbon monoxide, role: emission}
+
+units:
+  - name: Manure reception pit
+    stage: feedstock handling
+    substances: [hydrogen sulfide, ammonia, methane]
+    process_hazards: [endotoxins, confined space]
+    inventory_kg: 0
+  - name: Anaerobic digester (CSTR, mesophilic)
+    stage: processing
+    substances: [methane, carbon dioxide, hydrogen sulfide, ammonia]
+    process_hazards: [acidification, foaming, overpressure, confined space]
+    inventory_kg: 150
+    temperature_c: 37
+    pressure_bar: 1.02
+    equipment_score: 1
+    structure_score: 1
+  - name: Biogas holder
+    stage: storage
+    substances: [methane, hydrogen sulfide]
+    process_hazards: [explosive atmosphere, overpressure]
+    inventory_kg: 600
+    temperature_c: 25
+    pressure_bar: 1.03
+    equipment_score: 1
+  - name: CHP engine
+    stage: use
+    substances: [methane, carbon monoxide]
+    process_hazards: [explosive atmosphere]
+    inventory_kg: 5
+    temperature_c: 450
+    pressure_bar: 1.0
+    equipment_score: 2
+  - name: Digestate storage and spreading
+    stage: end of life
+    substances: [ammonia]
+    process_hazards: [pathogens in digestate, ammonia emissions]
+
+assessments:
+  - {stage: feedstock handling, aspect: safety, method: literature review of occupational exposure, status: done}
+  - {stage: processing, aspect: safety, method: HAZID + risk matrix, status: done}
+  - {stage: storage, aspect: safety, method: ATEX zoning, status: planned}
+  - {stage: use, aspect: safety, method: HAZID, status: planned}
+  - {stage: end of life, aspect: safety, method: digestate quality and pathogen screening, status: planned}
+  - {stage: all, aspect: environmental, method: screening LCA with regional grid factors, status: done}
+  - {stage: all, aspect: socio-economic, method: E-LCA and S-LCA scoring, status: done}
+
+criteria:
+  - {indicator: Process stability, operator: ">=", threshold: 3, dimension: Risk & reliability,
+     note: Minimum acceptable stability for continuous operation}
+  - {indicator: Gas-safety requirements, operator: "<=", threshold: 4, dimension: Inherent safety}
+
+indicator_specs:
+  # Risk and reliability (BioSSbD step 2); weights from Table 6 (normalised by the toolbox)
+  - {name: Feedstock reliability, dimension: Risk & reliability, scale: [1, 5], ordinal: true, weight: 0.20, step: 2}
+  - {name: Process stability, dimension: Risk & reliability, scale: [1, 5], ordinal: true, weight: 0.25, step: 2}
+  - {name: Inhibition risk (favourability), dimension: Risk & reliability, scale: [1, 5], ordinal: true, weight: 0.20, step: 2}
+  - {name: Operational complexity (favourability), dimension: Risk & reliability, scale: [1, 5], ordinal: true, weight: 0.15, step: 2}
+  - {name: Start-up risk (favourability), dimension: Risk & reliability, scale: [1, 5], ordinal: true, weight: 0.10, step: 2}
+  # Design integration and inherent safety (step 3); two burden criteria are minimised
+  - {name: Feedstock complementarity, dimension: Inherent safety, scale: [1, 5], ordinal: true, step: 3}
+  - {name: Inherent hazard reduction, dimension: Inherent safety, scale: [1, 5], ordinal: true, step: 3}
+  - {name: Low need for pretreatment, dimension: Inherent safety, scale: [1, 5], ordinal: true, step: 3}
+  - {name: Process simplification potential, dimension: Inherent safety, scale: [1, 5], ordinal: true, step: 3}
+  - {name: Sensitivity to design conditions, dimension: Inherent safety, direction: min, scale: [1, 5], ordinal: true, step: 3}
+  - {name: Gas-safety requirements, dimension: Inherent safety, direction: min, scale: [1, 5], ordinal: true, step: 3}
+  - {name: Ease of inherent safety implementation, dimension: Inherent safety, scale: [1, 5], ordinal: true, step: 3}
+  # Environmental (step 10): country-driven scores
+  - {name: GHG score (grid intensity), dimension: Environmental, scale: [1, 5], ordinal: true, step: 10}
+  - {name: Water score (water stress), dimension: Environmental, scale: [1, 5], ordinal: true, step: 10}
+  # Economic and social (step 11)
+  - {name: Market scale, dimension: Economic, scale: [1, 5], ordinal: true, step: 11}
+  - {name: Project feasibility, dimension: Economic, scale: [1, 5], ordinal: true, step: 11}
+  - {name: Economic robustness, dimension: Economic, scale: [1, 5], ordinal: true, step: 11}
+  - {name: Workers, dimension: Social, scale: [1, 5], ordinal: true, step: 11}
+  - {name: Community, dimension: Social, scale: [1, 5], ordinal: true, step: 11}
+  - {name: Value chain, dimension: Social, scale: [1, 5], ordinal: true, step: 11}
+  - {name: Society, dimension: Social, scale: [1, 5], ordinal: true, step: 11}
+
+# Risk categories of Table 4 (shared by the three systems)
+_risks: &risks
+  - {name: Feedstock variability, impact: 4, likelihood: 4, stage: feedstock handling,
+     mitigation: Co-substrate balancing; buffer storage}
+  - {name: Process instability, impact: 5, likelihood: 3, stage: processing,
+     mitigation: OLR control; pH and VFA monitoring}
+  - {name: Mechanical failure, impact: 4, likelihood: 3, stage: processing,
+     mitigation: Preventive maintenance (TPM)}
+  - {name: Gas hazards, impact: 5, likelihood: 3, stage: storage,
+     mitigation: H2S and CH4 detection; ventilation; flare}
+  - {name: Start-up instability, impact: 5, likelihood: 4, stage: processing,
+     mitigation: Inoculum; gradual loading}
+  - {name: Shutdown risks, impact: 4, likelihood: 3, stage: processing,
+     mitigation: Shutdown procedures; gas purging}
+  - {name: Socio-operational limitations, impact: 3, likelihood: 4, stage: use,
+     mitigation: Operator training; cooperative governance}
+
+alternatives:
+  - name: Lactoserum + manure
+    description: Cheese whey co-digested with cattle manure (Colombia; grid 207 g CO2-eq/kWh; water stress <10%)
+    units:
+      - name: Whey buffer tank
+        stage: feedstock handling
+        process_hazards: [acidification]
+        inventory_kg: 0
+    risks: *risks
+    indicators:
+      Feedstock reliability: {value: 5, evidence: literature, source: Table 6}
+      Process stability: {value: 5, evidence: literature, source: Table 6}
+      Inhibition risk (favourability): {value: 4, evidence: literature, source: Table 6}
+      Operational complexity (favourability): {value: 4, evidence: literature, source: Table 6}
+      Start-up risk (favourability): {value: 3, evidence: literature, source: Table 6}
+      Feedstock complementarity: {value: 5, evidence: literature, source: Table 8}
+      Inherent hazard reduction: {value: 5, evidence: literature, source: Table 8}
+      Low need for pretreatment: {value: 4, evidence: literature, source: Table 8}
+      Process simplification potential: {value: 5, evidence: literature, source: Table 8}
+      Sensitivity to design conditions: {value: 3, evidence: literature, source: Table 8}
+      Gas-safety requirements: {value: 3, evidence: literature, source: Table 8}
+      Ease of inherent safety implementation: {value: 5, evidence: literature, source: Table 8}
+      GHG score (grid intensity): {value: 3, evidence: literature, source: Table 10}
+      Water score (water stress): {value: 5, evidence: literature, source: Table 10}
+      Market scale: {value: 5, evidence: literature, source: Table 11}
+      Project feasibility: {value: 5, evidence: literature, source: Table 11}
+      Economic robustness: {value: 4, evidence: literature, source: Table 11}
+      Workers: {value: 4, evidence: literature, source: Table 12}
+      Community: {value: 4, evidence: literature, source: Table 12}
+      Value chain: {value: 5, evidence: literature, source: Table 12}
+      Society: {value: 4, evidence: literature, source: Table 12}
+
+  - name: Cacao husk + manure
+    description: Cacao pod husk co-digested with cattle manure (Brazil; grid 62 g CO2-eq/kWh; water stress 10-20%)
+    units:
+      - name: Husk storage and milling
+        stage: feedstock handling
+        process_hazards: [bioaerosols, mycotoxins]
+        inventory_kg: 0
+    risks: *risks
+    indicators:
+      Feedstock reliability: {value: 3, evidence: literature, source: Table 6}
+      Process stability: {value: 3, evidence: literature, source: Table 6}
+      Inhibition risk (favourability): {value: 3, evidence: literature, source: Table 6}
+      Operational complexity (favourability): {value: 3, evidence: literature, source: Table 6}
+      Start-up risk (favourability): {value: 3, evidence: literature, source: Table 6}
+      Feedstock complementarity: {value: 4, evidence: literature, source: Table 8}
+      Inherent hazard reduction: {value: 3, evidence: literature, source: Table 8}
+      Low need for pretreatment: {value: 3, evidence: literature, source: Table 8}
+      Process simplification potential: {value: 3, evidence: literature, source: Table 8}
+      Sensitivity to design conditions: {value: 4, evidence: literature, source: Table 8}
+      Gas-safety requirements: {value: 3, evidence: literature, source: Table 8}
+      Ease of inherent safety implementation: {value: 3, evidence: literature, source: Table 8}
+      GHG score (grid intensity): {value: 5, evidence: literature, source: Table 10}
+      Water score (water stress): {value: 4, evidence: literature, source: Table 10}
+      Market scale: {value: 4, evidence: literature, source: Table 11}
+      Project feasibility: {value: 3, evidence: literature, source: Table 11}
+      Economic robustness: {value: 3, evidence: literature, source: Table 11}
+      Workers: {value: 3, evidence: literature, source: Table 12}
+      Community: {value: 3, evidence: literature, source: Table 12}
+      Value chain: {value: 4, evidence: literature, source: Table 12}
+      Society: {value: 3, evidence: literature, source: Table 12}
+
+  - name: Coffee husk + manure
+    description: Coffee husk co-digested with cattle manure (Mexico; grid 409 g CO2-eq/kWh; water stress 40-80%)
+    units:
+      - name: Husk storage and milling
+        stage: feedstock handling
+        process_hazards: [bioaerosols, mycotoxins]
+        inventory_kg: 0
+    risks: *risks
+    indicators:
+      Feedstock reliability: {value: 2, evidence: literature, source: Table 6}
+      Process stability: {value: 2, evidence: literature, source: Table 6}
+      Inhibition risk (favourability): {value: 2, evidence: literature, source: Table 6}
+      Operational complexity (favourability): {value: 2, evidence: literature, source: Table 6}
+      Start-up risk (favourability): {value: 2, evidence: literature, source: Table 6}
+      Feedstock complementarity: {value: 3, evidence: literature, source: Table 8}
+      Inherent hazard reduction: {value: 2, evidence: literature, source: Table 8}
+      Low need for pretreatment: {value: 2, evidence: literature, source: Table 8}
+      Process simplification potential: {value: 2, evidence: literature, source: Table 8}
+      Sensitivity to design conditions: {value: 5, evidence: literature, source: Table 8}
+      Gas-safety requirements: {value: 5, evidence: literature, source: Table 8}
+      Ease of inherent safety implementation: {value: 2, evidence: literature, source: Table 8}
+      GHG score (grid intensity): {value: 1, evidence: literature, source: Table 10}
+      Water score (water stress): {value: 2, evidence: literature, source: Table 10}
+      Market scale: {value: 3, evidence: literature, source: Table 11}
+      Project feasibility: {value: 2, evidence: literature, source: Table 11}
+      Economic robustness: {value: 2, evidence: literature, source: Table 11}
+      Workers: {value: 2, evidence: literature, source: Table 12}
+      Community: {value: 2, evidence: literature, source: Table 12}
+      Value chain: {value: 3, evidence: literature, source: Table 12}
+      Society: {value: 2, evidence: literature, source: Table 12}
