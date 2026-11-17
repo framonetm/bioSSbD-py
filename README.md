@@ -16,6 +16,8 @@ bioSSbD-py turns the [revised EC SSbD framework](https://publications.jrc.ec.eur
 Safety is assessed at **every life-cycle stage**, not only where a chemical is handled, so that safety and sustainability share one
 system boundary, as the revised framework's Scoping Analysis requires.
 
+![bioSSbD-py architecture: inputs and public data sources feed a YAML/pydantic data model through connectors; the core runs scoping, safety, sustainability and evaluation, then documentation and the PDCA cycle, producing the safety matrix, risk results, indicator table, dimension radar and Pareto front, rank acceptability and the SSbD dossier](docs/img/bioSSbD_scheme.png)
+
 ## Install
 
 ```bash
@@ -134,6 +136,14 @@ of the AcoD example is planned for 0.2.
 ## Citing
 
 See `CITATION.cff`. Please also cite the methods you use (Heikkilä 1999 for the ISI; QSDsan, BioSTEAM and Brightway where applicable).
+
+The anaerobic co-digestion (AcoD) worked example follows:
+
+- Ramonet, F. (2026). Operationalizing BioSSbD: A safe-and-sustainable-by-design framework for biorefineries.
+  *Biofuels, Bioproducts and Biorefining*. <https://doi.org/10.1002/bbb.70178>
+- Ramonet, F., Cabeza, C., Vance, C., Cabeza, I. Safe-and-Sustainable-by-Design of Anaerobic Co-Digestion Systems:
+  Integrating Risk, Reliability, and Life Cycle Sustainability. SSRN preprint (not peer reviewed).
+  <https://ssrn.com/abstract=6963863>
 
 ## Licence
 

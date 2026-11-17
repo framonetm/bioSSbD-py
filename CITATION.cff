@@ -17,3 +17,12 @@ references:
     journal: "Biofuels, Bioproducts and Biorefining"
     year: 2026
     doi: 10.1002/bbb.70178
+  - type: article
+    title: "Safe-and-Sustainable-by-Design of Anaerobic Co-Digestion Systems: Integrating Risk, Reliability, and Life Cycle Sustainability"
+    authors:
+      - {family-names: Ramonet, given-names: Fernando}
+      - {family-names: Cabeza, given-names: Camila}
+      - {family-names: Vance, given-names: Charlene}
+      - {family-names: Cabeza, given-names: Iván}
+    journal: "SSRN preprint (not peer reviewed)"
+    url: "https://ssrn.com/abstract=6963863"
